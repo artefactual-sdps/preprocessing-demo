@@ -16,7 +16,7 @@ if os.environ.get("TRIGGER_MODE_AUTO", "").lower() in true:
 
 # Docker images
 custom_build(
-  ref="preprocessing-base-worker:dev",
+  ref="preprocessing-demo-worker:dev",
   command=["hack/build_docker.sh"],
   deps=["."],
 )

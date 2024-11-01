@@ -7,7 +7,7 @@ import (
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/fs"
 
-	"github.com/artefactual-sdps/preprocessing-base/internal/config"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/config"
 )
 
 const testConfig = `# Config

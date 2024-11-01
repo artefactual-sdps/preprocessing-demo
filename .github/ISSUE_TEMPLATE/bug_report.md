@@ -1,13 +1,12 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: 'Problem: '
-labels: ''
-assignees: ''
-
+title: "Problem: "
+labels: ""
+assignees: ""
 ---
 
-<!--- If this issue relates to a security vulnerability in Enduro or any of the related repositories, DO NOT file the issue here. Please see the security policy at https://github.com/archivematica/Issues/security/policy for information on how to safely report a security vulnerability. --->
+<!--- If this issue relates to a security vulnerability in preprocessing-demo or any of the related repositories, DO NOT file the issue here. Please see the security policy at https://github.com/archivematica/Issues/security/policy for information on how to safely report a security vulnerability. --->
 
 <!--- Please title your issue as a problem statement, starting with "Problem:". Check existing issues for examples. --->
 
@@ -18,6 +17,7 @@ A clear and concise description of what the bug is.
 **To Reproduce**
 
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'

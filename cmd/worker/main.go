@@ -11,12 +11,12 @@ import (
 	"github.com/spf13/pflag"
 	"go.artefactual.dev/tools/log"
 
-	"github.com/artefactual-sdps/preprocessing-base/cmd/worker/workercmd"
-	"github.com/artefactual-sdps/preprocessing-base/internal/config"
-	"github.com/artefactual-sdps/preprocessing-base/internal/version"
+	"github.com/artefactual-sdps/preprocessing-demo/cmd/worker/workercmd"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/config"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/version"
 )
 
-const appName = "preprocessing-base-worker"
+const appName = "preprocessing-demo-worker"
 
 func main() {
 	p := pflag.NewFlagSet(workercmd.Name, pflag.ExitOnError)
