@@ -28,7 +28,7 @@ linters-settings:
     sections:
       - standard
       - default
-      - prefix(github.com/artefactual-sdps/preprocessing-base)
+      - prefix(github.com/artefactual-sdps/preprocessing-demo)
     section-separators:
       - newLine
   gofumpt:

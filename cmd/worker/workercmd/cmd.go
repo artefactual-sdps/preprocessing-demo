@@ -12,8 +12,8 @@ import (
 	temporalsdk_worker "go.temporal.io/sdk/worker"
 	temporalsdk_workflow "go.temporal.io/sdk/workflow"
 
-	"github.com/artefactual-sdps/preprocessing-base/internal/config"
-	"github.com/artefactual-sdps/preprocessing-base/internal/workflow"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/config"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/workflow"
 )
 
 const Name = "preprocessing-worker"

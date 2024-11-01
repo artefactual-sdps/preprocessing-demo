@@ -1,4 +1,4 @@
-module github.com/artefactual-sdps/preprocessing-base
+module github.com/artefactual-sdps/preprocessing-demo
 
 go 1.23.2
 
