@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/artefactual-sdps/temporal-activities/bagcreate"
+	"github.com/artefactual-sdps/temporal-activities/ffvalidate"
 	"github.com/spf13/viper"
 )
 
@@ -33,7 +34,9 @@ type Configuration struct {
 
 	Temporal Temporal
 	Worker   WorkerConfig
-	Bagit    bagcreate.Config
+
+	Bagit      bagcreate.Config
+	FileFormat ffvalidate.Config
 }
 
 type Temporal struct {

@@ -3,9 +3,11 @@ package workflow
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/artefactual-sdps/temporal-activities/bagcreate"
+	"github.com/artefactual-sdps/temporal-activities/ffvalidate"
 	"go.artefactual.dev/tools/temporal"
 	temporalsdk_temporal "go.temporal.io/sdk/temporal"
 	temporalsdk_workflow "go.temporal.io/sdk/workflow"
@@ -39,6 +41,24 @@ func (r *PreprocessingWorkflowResult) newEvent(ctx temporalsdk_workflow.Context,
 	return ev
 }
 
+func (r *PreprocessingWorkflowResult) validationError(
+	ctx temporalsdk_workflow.Context,
+	ev *eventlog.Event,
+	msg string,
+	failures []string,
+) *PreprocessingWorkflowResult {
+	r.Outcome = OutcomeContentError
+	ev.Complete(
+		temporalsdk_workflow.Now(ctx),
+		enums.EventOutcomeValidationFailure,
+		"Content error: %s:\n%s",
+		msg,
+		strings.Join(failures, "\n"),
+	)
+
+	return r
+}
+
 func (r *PreprocessingWorkflowResult) systemError(
 	ctx temporalsdk_workflow.Context,
 	err error,
@@ -48,7 +68,6 @@ func (r *PreprocessingWorkflowResult) systemError(
 	logger := temporalsdk_workflow.GetLogger(ctx)
 	logger.Error("System error", "message", err.Error())
 
-	// Complete last preservation task event.
 	ev.Complete(
 		temporalsdk_workflow.Now(ctx),
 		enums.EventOutcomeSystemFailure,
@@ -74,10 +93,8 @@ func (w *PreprocessingWorkflow) Execute(
 	ctx temporalsdk_workflow.Context,
 	params *PreprocessingWorkflowParams,
 ) (*PreprocessingWorkflowResult, error) {
-	var (
-		result PreprocessingWorkflowResult
-		e      error
-	)
+	var e error
+	result := &PreprocessingWorkflowResult{}
 
 	logger := temporalsdk_workflow.GetLogger(ctx)
 	logger.Debug("PreprocessingWorkflow workflow running!", "params", params)
@@ -88,8 +105,36 @@ func (w *PreprocessingWorkflow) Execute(
 	}
 	result.RelativePath = params.RelativePath
 
+	// Validate file formats.
+	ev := result.newEvent(ctx, "Validate SIP file formats")
+	var validateFileFormat ffvalidate.Result
+	e = temporalsdk_workflow.ExecuteActivity(
+		withLocalActOpts(ctx),
+		ffvalidate.Name,
+		&ffvalidate.Params{Path: filepath.Join(w.sharedPath, params.RelativePath)},
+	).Get(ctx, &validateFileFormat)
+	if e != nil {
+		result.systemError(ctx, e, ev, "file format validation has failed")
+		return result, nil
+	}
+	if validateFileFormat.Failures != nil {
+		result.validationError(
+			ctx,
+			ev,
+			"file format validation has failed. One or more file formats are not allowed",
+			validateFileFormat.Failures,
+		)
+	} else {
+		ev.Succeed(temporalsdk_workflow.Now(ctx), "No disallowed file formats found")
+	}
+
+	// Stop here if there are validation errors.
+	if result.Outcome == OutcomeContentError {
+		return result, nil
+	}
+
 	// Bag the SIP for Enduro processing.
-	ev := result.newEvent(ctx, "Bag SIP")
+	ev = result.newEvent(ctx, "Bag SIP")
 	var createBag bagcreate.Result
 	e = temporalsdk_workflow.ExecuteActivity(
 		withLocalActOpts(ctx),
@@ -103,7 +148,7 @@ func (w *PreprocessingWorkflow) Execute(
 	}
 	ev.Succeed(temporalsdk_workflow.Now(ctx), "SIP has been bagged")
 
-	return &result, e
+	return result, nil
 }
 
 func withLocalActOpts(ctx temporalsdk_workflow.Context) temporalsdk_workflow.Context {
