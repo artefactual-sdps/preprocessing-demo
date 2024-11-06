@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/artefactual-sdps/temporal-activities/bagcreate"
+	"github.com/artefactual-sdps/temporal-activities/ffvalidate"
 	"github.com/go-logr/logr"
 	"go.artefactual.dev/tools/temporal"
 	temporalsdk_activity "go.temporal.io/sdk/activity"
@@ -58,6 +59,10 @@ func (m *Main) Run(ctx context.Context) error {
 		temporalsdk_workflow.RegisterOptions{Name: m.cfg.Temporal.WorkflowName},
 	)
 
+	w.RegisterActivityWithOptions(
+		ffvalidate.New(m.cfg.FileFormat).Execute,
+		temporalsdk_activity.RegisterOptions{Name: ffvalidate.Name},
+	)
 	w.RegisterActivityWithOptions(
 		bagcreate.New(m.cfg.Bagit).Execute,
 		temporalsdk_activity.RegisterOptions{Name: bagcreate.Name},
