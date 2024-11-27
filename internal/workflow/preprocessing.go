@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -12,8 +13,10 @@ import (
 	temporalsdk_temporal "go.temporal.io/sdk/temporal"
 	temporalsdk_workflow "go.temporal.io/sdk/workflow"
 
+	"github.com/artefactual-sdps/preprocessing-demo/internal/activities"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/enums"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/eventlog"
+	"github.com/artefactual-sdps/preprocessing-demo/internal/premis"
 )
 
 type Outcome int
@@ -148,6 +151,14 @@ func (w *PreprocessingWorkflow) Execute(
 	}
 	ev.Succeed(temporalsdk_workflow.Now(ctx), "SIP has been bagged")
 
+	// Write PREMIS XML.
+	ev = result.newEvent(ctx, "Create premis.xml")
+	if e = writePREMISFile(ctx, filepath.Join(w.sharedPath, params.RelativePath)); e != nil {
+		result.systemError(ctx, e, ev, "premis.xml creation has failed")
+	} else {
+		ev.Succeed(temporalsdk_workflow.Now(ctx), "Created a premis.xml and stored in metadata directory")
+	}
+
 	return result, nil
 }
 
@@ -161,4 +172,85 @@ func withLocalActOpts(ctx temporalsdk_workflow.Context) temporalsdk_workflow.Con
 			},
 		},
 	)
+}
+
+func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
+	var e error
+	metadataPath := filepath.Join(sipPath, "metadata")
+	premisFilePath := filepath.Join(metadataPath, "premis.xml")
+
+	// Add metadata directory if it doesn't exist.
+	if _, err := os.Stat(metadataPath); err != nil {
+		err = os.MkdirAll(metadataPath, 0o750)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Add PREMIS objects.
+	var addPREMISObjects activities.AddPREMISObjectsResult
+	e = temporalsdk_workflow.ExecuteActivity(
+		withLocalActOpts(ctx),
+		activities.AddPREMISObjectsName,
+		&activities.AddPREMISObjectsParams{
+			SIPPath:        sipPath,
+			PREMISFilePath: premisFilePath,
+		},
+	).Get(ctx, &addPREMISObjects)
+	if e != nil {
+		return e
+	}
+
+	// Add PREMIS event noting validate SIP file formats result.
+	validateStructureOutcomeDetail := "It's good"
+
+	var addPREMISEvent activities.AddPREMISEventResult
+	e = temporalsdk_workflow.ExecuteActivity(
+		withLocalActOpts(ctx),
+		activities.AddPREMISEventName,
+		&activities.AddPREMISEventParams{
+			PREMISFilePath: premisFilePath,
+			Agent:          premis.AgentDefault(),
+			Type:           "validation",
+			Detail:         "name=\"Validate SIP file formats\"",
+			OutcomeDetail:  validateStructureOutcomeDetail,
+			Failures:       nil,
+		},
+	).Get(ctx, &addPREMISEvent)
+	if e != nil {
+		return e
+	}
+
+	// Add PREMIS events for SIP bagging.
+	e = temporalsdk_workflow.ExecuteActivity(
+		withLocalActOpts(ctx),
+		activities.AddPREMISEventName,
+		&activities.AddPREMISEventParams{
+			PREMISFilePath: premisFilePath,
+			Agent:          premis.AgentDefault(),
+			Type:           "validation",
+			Detail:         "name=\"Bag SIP\"",
+			OutcomeDetail:  "Format allowed",
+			Failures:       nil,
+		},
+	).Get(ctx, &addPREMISEvent)
+	if e != nil {
+		return e
+	}
+
+	// Add Enduro PREMIS agent.
+	var addPREMISAgent activities.AddPREMISAgentResult
+	e = temporalsdk_workflow.ExecuteActivity(
+		withLocalActOpts(ctx),
+		activities.AddPREMISAgentName,
+		&activities.AddPREMISAgentParams{
+			PREMISFilePath: premisFilePath,
+			Agent:          premis.AgentDefault(),
+		},
+	).Get(ctx, &addPREMISAgent)
+	if e != nil {
+		return e
+	}
+
+	return nil
 }

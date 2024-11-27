@@ -4,7 +4,9 @@ go 1.23.2
 
 require (
 	github.com/artefactual-sdps/temporal-activities v0.0.0-20241105002718-bc4a9d85ce42
+	github.com/beevik/etree v1.4.1
 	github.com/go-logr/logr v1.4.2
+	github.com/google/uuid v1.6.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
@@ -21,7 +23,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
