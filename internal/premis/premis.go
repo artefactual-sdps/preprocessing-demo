@@ -113,12 +113,12 @@ func ParseOrInitialize(filePath string) (*etree.Document, error) {
 
 func getRoot(doc *etree.Document) (*etree.Element, error) {
 	// Get PREMIS root element.
-	PREMISEl := doc.FindElement("/premis:premis")
-	if PREMISEl == nil {
+	el := doc.FindElement("/premis:premis")
+	if el == nil {
 		return nil, errors.New("no root premis element found in document")
 	}
 
-	return PREMISEl, nil
+	return el, nil
 }
 
 func eventFromEventSummaryAndAgent(eventSummary EventSummary, agent Agent) Event {
@@ -133,25 +133,25 @@ func eventFromEventSummaryAndAgent(eventSummary EventSummary, agent Agent) Event
 }
 
 func AppendObjectXML(doc *etree.Document, object Object) error {
-	PREMISEl, err := getRoot(doc)
+	el, err := getRoot(doc)
 	if err != nil {
 		return err
 	}
 
-	addObjectElementIfNeeded(PREMISEl, object)
+	addObjectElementIfNeeded(el, object)
 
 	return nil
 }
 
 func AppendEventXMLForEachObject(doc *etree.Document, eventSummary EventSummary, agent Agent) error {
-	PREMISEl, err := getRoot(doc)
+	el, err := getRoot(doc)
 	if err != nil {
 		return err
 	}
 
 	// Add events for each existing object.
-	objectEls := PREMISEl.FindElements("//premis:object")
-	appendEventXMLForObjects(PREMISEl, eventSummary, agent, objectEls)
+	objectEls := el.FindElements("//premis:object")
+	appendEventXMLForObjects(el, eventSummary, agent, objectEls)
 
 	return nil
 }
@@ -175,12 +175,12 @@ func appendEventXMLForObjects(
 }
 
 func AppendAgentXML(doc *etree.Document, agent Agent) error {
-	PREMISEl, err := getRoot(doc)
+	el, err := getRoot(doc)
 	if err != nil {
 		return err
 	}
 
-	addAgentElementIfNeeded(PREMISEl, agent)
+	addAgentElementIfNeeded(el, agent)
 
 	return nil
 }
