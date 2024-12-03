@@ -333,21 +333,21 @@ func checkForDuplicateElementData(PREMISEl *etree.Element, elementTag string, pa
 
 func checkIfObjectElementExists(PREMISEl *etree.Element, object Object) bool {
 	// Define xpath paths to child elements and values to match on.
-	paths := make(map[string]string)
-
-	paths["premis:originalName"] = object.OriginalName
+	paths := map[string]string{
+		"premis:originalName": object.OriginalName,
+	}
 
 	return checkForDuplicateElementData(PREMISEl, "object", paths)
 }
 
 func checkIfAgentElementExists(PREMISEl *etree.Element, agent Agent) bool {
 	// Define xpath paths to child elements and values to match on.
-	paths := make(map[string]string)
-
-	paths["premis:agentType"] = agent.Type
-	paths["premis:agentName"] = agent.Name
-	paths["premis:agentIdentifier/premis:agentIdentifierType"] = agent.IdType
-	paths["premis:agentIdentifier/premis:agentIdentifierValue"] = agent.IdValue
+	paths := map[string]string{
+		"premis:agentType": agent.Type,
+		"premis:agentName": agent.Name,
+		"premis:agentIdentifier/premis:agentIdentifierType":  agent.IdType,
+		"premis:agentIdentifier/premis:agentIdentifierValue": agent.IdValue,
+	}
 
 	return checkForDuplicateElementData(PREMISEl, "agent", paths)
 }
