@@ -11,9 +11,7 @@ const AddPREMISEventName = "add-premis-event"
 type AddPREMISEventParams struct {
 	PREMISFilePath string
 	Agent          premis.Agent
-	Type           string
-	Detail         string
-	OutcomeDetail  string
+	Summary        premis.EventSummary
 	Failures       []string
 }
 
@@ -34,19 +32,12 @@ func (md *AddPREMISEventActivity) Execute(
 		return nil, err
 	}
 
-	outcome := "valid"
+	params.Summary.Outcome = "valid"
 	if params.Failures != nil {
-		outcome = "invalid"
+		params.Summary.Outcome = "invalid"
 	}
 
-	eventSummary := premis.EventSummary{
-		Type:          params.Type,
-		Detail:        params.Detail,
-		Outcome:       outcome,
-		OutcomeDetail: params.OutcomeDetail,
-	}
-
-	err = premis.AppendEventXMLForEachObject(doc, eventSummary, params.Agent)
+	err = premis.AppendEventXMLForEachObject(doc, params.Summary, params.Agent)
 	if err != nil {
 		return nil, err
 	}

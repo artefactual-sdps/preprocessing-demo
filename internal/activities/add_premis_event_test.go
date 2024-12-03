@@ -59,8 +59,10 @@ func TestAddPREMISEvent(t *testing.T) {
 			params: activities.AddPREMISEventParams{
 				PREMISFilePath: PREMISFilePathNormalNoFailures,
 				Agent:          premis.AgentDefault(),
-				Type:           "someActivity",
-				Failures:       noFailures,
+				Summary: premis.EventSummary{
+					Type: "someActivity",
+				},
+				Failures: noFailures,
 			},
 			result: activities.AddPREMISEventResult{},
 		},
@@ -69,8 +71,10 @@ func TestAddPREMISEvent(t *testing.T) {
 			params: activities.AddPREMISEventParams{
 				PREMISFilePath: PREMISFilePathNormalWithFailures,
 				Agent:          premis.AgentDefault(),
-				Type:           "someActivity",
-				Failures:       failures,
+				Summary: premis.EventSummary{
+					Type: "someActivity",
+				},
+				Failures: failures,
 			},
 			result: activities.AddPREMISEventResult{},
 		},
@@ -79,8 +83,10 @@ func TestAddPREMISEvent(t *testing.T) {
 			params: activities.AddPREMISEventParams{
 				PREMISFilePath: PREMISFilePathNoFiles,
 				Agent:          premis.AgentDefault(),
-				Type:           "someActivity",
-				Failures:       noFailures,
+				Summary: premis.EventSummary{
+					Type: "someActivity",
+				},
+				Failures: noFailures,
 			},
 			result: activities.AddPREMISEventResult{},
 		},
@@ -89,8 +95,10 @@ func TestAddPREMISEvent(t *testing.T) {
 			params: activities.AddPREMISEventParams{
 				PREMISFilePath: PREMISFilePathNonExistent,
 				Agent:          premis.AgentDefault(),
-				Type:           "someActivity",
-				Failures:       noFailures,
+				Summary: premis.EventSummary{
+					Type: "someActivity",
+				},
+				Failures: noFailures,
 			},
 			result:  activities.AddPREMISEventResult{},
 			wantErr: "no such file or directory",

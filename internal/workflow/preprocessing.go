@@ -211,10 +211,12 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 		&activities.AddPREMISEventParams{
 			PREMISFilePath: premisFilePath,
 			Agent:          premis.AgentDefault(),
-			Type:           "validation",
-			Detail:         "name=\"Validate SIP file formats\"",
-			OutcomeDetail:  validateStructureOutcomeDetail,
-			Failures:       nil,
+			Summary: premis.EventSummary{
+				Type:          "validation",
+				Detail:        "name=\"Validate SIP file formats\"",
+				OutcomeDetail: validateStructureOutcomeDetail,
+			},
+			Failures: nil,
 		},
 	).Get(ctx, &addPREMISEvent)
 	if e != nil {
@@ -228,10 +230,12 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 		&activities.AddPREMISEventParams{
 			PREMISFilePath: premisFilePath,
 			Agent:          premis.AgentDefault(),
-			Type:           "validation",
-			Detail:         "name=\"Bag SIP\"",
-			OutcomeDetail:  "Format allowed",
-			Failures:       nil,
+			Summary: premis.EventSummary{
+				Type:          "validation",
+				Detail:        "name=\"Bag SIP\"",
+				OutcomeDetail: "Format allowed",
+			},
+			Failures: nil,
 		},
 	).Get(ctx, &addPREMISEvent)
 	if e != nil {
