@@ -6,10 +6,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/beevik/etree"
-	"github.com/google/uuid"
 )
 
 const EmptyXML = `<?xml version="1.0" encoding="UTF-8"?>
@@ -31,6 +29,9 @@ type Object struct {
 }
 
 type EventSummary struct {
+	IdType        string
+	IdValue       string
+	DateTime      string
 	Type          string
 	Detail        string
 	Outcome       string
@@ -124,9 +125,6 @@ func getRoot(doc *etree.Document) (*etree.Element, error) {
 func eventFromEventSummaryAndAgent(eventSummary EventSummary, agent Agent) Event {
 	return Event{
 		Summary:      eventSummary,
-		IdType:       "UUID",
-		IdValue:      uuid.New().String(),
-		DateTime:     time.Now().Format(time.RFC3339),
 		AgentIdType:  agent.IdType,
 		AgentIdValue: agent.IdValue,
 	}
@@ -223,17 +221,17 @@ func addEventElement(PREMISEl *etree.Element, event Event) {
 	eventIdEl := eventEl.CreateElement("premis:eventIdentifier")
 
 	eventIdentifierTypeEl := eventIdEl.CreateElement("premis:eventIdentifierType")
-	eventIdentifierTypeEl.CreateText(event.IdType)
+	eventIdentifierTypeEl.CreateText(event.Summary.IdType)
 
 	eventIdentifierValueEl := eventIdEl.CreateElement("premis:eventIdentifierValue")
-	eventIdentifierValueEl.CreateText(event.IdValue)
+	eventIdentifierValueEl.CreateText(event.Summary.IdValue)
 
 	// Add event type and datetime elements.
 	eventTypeEl := eventEl.CreateElement("premis:eventType")
 	eventTypeEl.CreateText(event.Summary.Type)
 
 	eventDateEl := eventEl.CreateElement("premis:eventDateTime")
-	eventDateEl.CreateText(event.DateTime)
+	eventDateEl.CreateText(event.Summary.DateTime)
 
 	// Add event detail elements.
 	eventDetailInfoEl := eventEl.CreateElement("premis:eventDetailInformation")
@@ -258,10 +256,10 @@ func LinkEventToObject(objectEl *etree.Element, eventFull Event) {
 	linkEventIdEl := objectEl.CreateElement("premis:linkingEventIdentifier")
 
 	linkEventIdTypeEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierType")
-	linkEventIdTypeEl.CreateText(eventFull.IdType)
+	linkEventIdTypeEl.CreateText(eventFull.Summary.IdType)
 
 	linkEventIdValueEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierValue")
-	linkEventIdValueEl.CreateText(eventFull.IdValue)
+	linkEventIdValueEl.CreateText(eventFull.Summary.IdValue)
 }
 
 func addEventAgentIdentifierElement(eventEl *etree.Element, event Event) {

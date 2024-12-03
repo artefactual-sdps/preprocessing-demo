@@ -15,7 +15,7 @@ const premisObjectAddContent = `<?xml version="1.0" encoding="UTF-8"?>
 <premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0">
   <premis:object xsi:type="premis:file">
     <premis:objectIdentifier>
-      <premis:objectIdentifierType>uuid</premis:objectIdentifierType>
+      <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
       <premis:objectIdentifierValue>c74a85b7-919b-409e-8209-9c7ebe0e7945</premis:objectIdentifierValue>
     </premis:objectIdentifier>
     <premis:objectCharacteristics>
@@ -34,8 +34,8 @@ const premisObjectAndEventAddContent = `<?xml version="1.0" encoding="UTF-8"?>
 <premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0">
   <premis:object xsi:type="premis:file">
     <premis:objectIdentifier>
-      <premis:objectIdentifierType>uuid</premis:objectIdentifierType>
-      <premis:objectIdentifierValue>c74a85b7-919b-409e-8209-9c7ebe0e7945</premis:objectIdentifierValue>
+      <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+      <premis:objectIdentifierValue>d14db00a-8d4d-4057-8661-cd0f70b670eb</premis:objectIdentifierValue>
     </premis:objectIdentifier>
     <premis:objectCharacteristics>
       <premis:format>
@@ -47,16 +47,16 @@ const premisObjectAndEventAddContent = `<?xml version="1.0" encoding="UTF-8"?>
     <premis:originalName>data/objects/test_transfer/content/cat.jpg</premis:originalName>
     <premis:linkingEventIdentifier>
       <premis:linkingEventIdentifierType>UUID</premis:linkingEventIdentifierType>
-      <premis:linkingEventIdentifierValue/>
+      <premis:linkingEventIdentifierValue>a3207f0b-3e09-4535-949f-d15a82972ac9</premis:linkingEventIdentifierValue>
     </premis:linkingEventIdentifier>
   </premis:object>
   <premis:event>
     <premis:eventIdentifier>
       <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
-      <premis:eventIdentifierValue/>
+      <premis:eventIdentifierValue>a3207f0b-3e09-4535-949f-d15a82972ac9</premis:eventIdentifierValue>
     </premis:eventIdentifier>
     <premis:eventType>validation</premis:eventType>
-    <premis:eventDateTime/>
+    <premis:eventDateTime>2024-12-03T09:51:07-08:00</premis:eventDateTime>
     <premis:eventDetailInformation>
       <premis:eventDetail>name=&quot;Validate SIP metadata&quot;</premis:eventDetail>
     </premis:eventDetailInformation>
@@ -156,16 +156,13 @@ func TestAppendPREMISObjectXML(t *testing.T) {
 	t.Parallel()
 
 	// Test with PREMIS object.
-	uuid := "c74a85b7-919b-409e-8209-9c7ebe0e7945"
-	originalName := "data/objects/test_transfer/content/cat.jpg"
-
 	doc, err := premis.NewDoc()
 	assert.NilError(t, err)
 
 	err = premis.AppendObjectXML(doc, premis.Object{
-		IdType:       "uuid",
-		IdValue:      uuid,
-		OriginalName: originalName,
+		IdType:       "UUID",
+		IdValue:      "c74a85b7-919b-409e-8209-9c7ebe0e7945",
+		OriginalName: "data/objects/test_transfer/content/cat.jpg",
 	})
 	assert.NilError(t, err)
 
@@ -182,42 +179,26 @@ func TestAppendPREMISEventXML(t *testing.T) {
 	t.Parallel()
 
 	// Add test PREMIS object.
-	uuid := "c74a85b7-919b-409e-8209-9c7ebe0e7945"
-	originalName := "data/objects/test_transfer/content/cat.jpg"
-
 	doc, err := premis.NewDoc()
 	assert.NilError(t, err)
 
 	err = premis.AppendObjectXML(doc, premis.Object{
-		IdType:       "uuid",
-		IdValue:      uuid,
-		OriginalName: originalName,
+		IdType:       "UUID",
+		IdValue:      "d14db00a-8d4d-4057-8661-cd0f70b670eb",
+		OriginalName: "data/objects/test_transfer/content/cat.jpg",
 	})
 	assert.NilError(t, err)
 
 	// Test adding PREMIS event.
 	err = premis.AppendEventXMLForEachObject(doc, premis.EventSummary{
+		IdType:        "UUID",
+		IdValue:       "a3207f0b-3e09-4535-949f-d15a82972ac9",
+		DateTime:      "2024-12-03T09:51:07-08:00",
 		Type:          "validation",
 		Detail:        "name=\"Validate SIP metadata\"",
 		Outcome:       "invalid",
 		OutcomeDetail: "Metadata validation successful",
 	}, premis.AgentDefault())
-	assert.NilError(t, err)
-
-	// Check length then blank the event identifier value.
-	idValueEl := doc.FindElement("/premis:premis/premis:event/premis:eventIdentifier/premis:eventIdentifierValue")
-	assert.Assert(t, idValueEl != nil)
-	assert.Assert(t, len(idValueEl.Text()) == 36)
-	idValueEl.SetText("")
-
-	// Blank text for other random/time elements.
-	err = blankElementText(
-		doc,
-		"/premis:premis/premis:object/premis:linkingEventIdentifier/premis:linkingEventIdentifierValue",
-	)
-	assert.NilError(t, err)
-
-	err = blankElementText(doc, "/premis:premis/premis:event/premis:eventDateTime")
 	assert.NilError(t, err)
 
 	// Get resulting XML string.
