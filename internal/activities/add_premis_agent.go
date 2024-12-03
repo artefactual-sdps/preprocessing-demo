@@ -8,14 +8,16 @@ import (
 
 const AddPREMISAgentName = "add-premis-agent"
 
-type AddPREMISAgentParams struct {
-	PREMISFilePath string
-	Agent          premis.Agent
-}
+type (
+	AddPREMISAgentParams struct {
+		PREMISFilePath string
+		Agent          premis.Agent
+	}
 
-type AddPREMISAgentResult struct{}
+	AddPREMISAgentResult struct{}
 
-type AddPREMISAgentActivity struct{}
+	AddPREMISAgentActivity struct{}
+)
 
 func NewAddPREMISAgent() *AddPREMISAgentActivity {
 	return &AddPREMISAgentActivity{}

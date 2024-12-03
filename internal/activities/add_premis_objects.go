@@ -14,16 +14,18 @@ import (
 
 const AddPREMISObjectsName = "add-premis-objects"
 
-type AddPREMISObjectsParams struct {
-	SIPPath        string
-	PREMISFilePath string
-}
+type (
+	AddPREMISObjectsParams struct {
+		SIPPath        string
+		PREMISFilePath string
+	}
 
-type AddPREMISObjectsResult struct{}
+	AddPREMISObjectsResult struct{}
 
-type AddPREMISObjectsActivity struct {
-	rng io.Reader
-}
+	AddPREMISObjectsActivity struct {
+		rng io.Reader
+	}
+)
 
 func NewAddPREMISObjects(rand io.Reader) *AddPREMISObjectsActivity {
 	return &AddPREMISObjectsActivity{rng: rand}

@@ -8,16 +8,18 @@ import (
 
 const AddPREMISEventName = "add-premis-event"
 
-type AddPREMISEventParams struct {
-	PREMISFilePath string
-	Agent          premis.Agent
-	Summary        premis.EventSummary
-	Failures       []string
-}
+type (
+	AddPREMISEventParams struct {
+		PREMISFilePath string
+		Agent          premis.Agent
+		Summary        premis.EventSummary
+		Failures       []string
+	}
 
-type AddPREMISEventResult struct{}
+	AddPREMISEventResult struct{}
 
-type AddPREMISEventActivity struct{}
+	AddPREMISEventActivity struct{}
+)
 
 func NewAddPREMISEvent() *AddPREMISEventActivity {
 	return &AddPREMISEventActivity{}
