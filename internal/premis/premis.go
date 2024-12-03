@@ -220,12 +220,12 @@ func addEventElement(PREMISEl *etree.Element, event Event) {
 	eventEl := PREMISEl.CreateElement("premis:event")
 
 	// Add event identifier elements.
-	eventIdElement := eventEl.CreateElement("premis:eventIdentifier")
+	eventIdEl := eventEl.CreateElement("premis:eventIdentifier")
 
-	eventIdentifierTypeEl := eventIdElement.CreateElement("premis:eventIdentifierType")
+	eventIdentifierTypeEl := eventIdEl.CreateElement("premis:eventIdentifierType")
 	eventIdentifierTypeEl.CreateText(event.IdType)
 
-	eventIdentifierValueEl := eventIdElement.CreateElement("premis:eventIdentifierValue")
+	eventIdentifierValueEl := eventIdEl.CreateElement("premis:eventIdentifierValue")
 	eventIdentifierValueEl.CreateText(event.IdValue)
 
 	// Add event type and datetime elements.
