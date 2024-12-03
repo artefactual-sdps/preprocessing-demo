@@ -202,8 +202,6 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 	}
 
 	// Add PREMIS event noting validate SIP file formats result.
-	validateStructureOutcomeDetail := "It's good"
-
 	var addPREMISEvent activities.AddPREMISEventResult
 	e = temporalsdk_workflow.ExecuteActivity(
 		withLocalActOpts(ctx),
@@ -214,7 +212,7 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 			Summary: premis.EventSummary{
 				Type:          "validation",
 				Detail:        "name=\"Validate SIP file formats\"",
-				OutcomeDetail: validateStructureOutcomeDetail,
+				OutcomeDetail: "File formats allowed",
 			},
 			Failures: nil,
 		},
