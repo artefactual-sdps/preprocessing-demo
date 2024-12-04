@@ -63,12 +63,12 @@ func AgentDefault() Agent {
 	}
 }
 
-func ParseFile(filePath string) (*etree.Document, error) {
+func NewDoc() (*etree.Document, error) {
 	doc := etree.NewDocument()
 
-	err := doc.ReadFromFile(filePath)
+	err := doc.ReadFromString(EmptyXML)
 	if err != nil {
-		return nil, fmt.Errorf("parse XML: %v", err)
+		return nil, err
 	}
 
 	doc.Indent(2)
@@ -76,12 +76,12 @@ func ParseFile(filePath string) (*etree.Document, error) {
 	return doc, nil
 }
 
-func NewDoc() (*etree.Document, error) {
+func ParseFile(filePath string) (*etree.Document, error) {
 	doc := etree.NewDocument()
 
-	err := doc.ReadFromString(EmptyXML)
+	err := doc.ReadFromFile(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse XML: %v", err)
 	}
 
 	doc.Indent(2)
@@ -108,24 +108,6 @@ func ParseOrInitialize(filePath string) (*etree.Document, error) {
 	}
 
 	return doc, nil
-}
-
-func getRoot(doc *etree.Document) (*etree.Element, error) {
-	// Get PREMIS root element.
-	el := doc.FindElement("/premis:premis")
-	if el == nil {
-		return nil, errors.New("no root premis element found in document")
-	}
-
-	return el, nil
-}
-
-func eventFromEventSummaryAndAgent(eventSummary EventSummary, agent Agent) Event {
-	return Event{
-		Summary:      eventSummary,
-		AgentIdType:  agent.IdType,
-		AgentIdValue: agent.IdValue,
-	}
 }
 
 func AppendObjectXML(doc *etree.Document, object Object) error {
@@ -169,6 +151,60 @@ func AppendAgentXML(doc *etree.Document, agent Agent) error {
 	addAgentElementIfNeeded(el, agent)
 
 	return nil
+}
+
+func LinkEventToObject(objectEl *etree.Element, eventFull Event) {
+	linkEventIdEl := objectEl.CreateElement("premis:linkingEventIdentifier")
+
+	linkEventIdTypeEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierType")
+	linkEventIdTypeEl.CreateText(eventFull.Summary.IdType)
+
+	linkEventIdValueEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierValue")
+	linkEventIdValueEl.CreateText(eventFull.Summary.IdValue)
+}
+
+func FilesWithinDirectory(contentPath string) ([]string, error) {
+	var subpaths []string
+
+	err := filepath.WalkDir(contentPath, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		subpath, err := filepath.Rel(contentPath, p)
+		if err != nil {
+			return err
+		}
+
+		subpaths = append(subpaths, subpath)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return subpaths, nil
+}
+
+func getRoot(doc *etree.Document) (*etree.Element, error) {
+	// Get PREMIS root element.
+	el := doc.FindElement("/premis:premis")
+	if el == nil {
+		return nil, errors.New("no root premis element found in document")
+	}
+
+	return el, nil
+}
+
+func eventFromEventSummaryAndAgent(eventSummary EventSummary, agent Agent) Event {
+	return Event{
+		Summary:      eventSummary,
+		AgentIdType:  agent.IdType,
+		AgentIdValue: agent.IdValue,
+	}
 }
 
 func addObjectElementIfNeeded(PREMISEl *etree.Element, object Object) {
@@ -238,16 +274,6 @@ func addEventElement(PREMISEl *etree.Element, event Event) {
 	}
 
 	addEventAgentIdentifierElement(eventEl, event)
-}
-
-func LinkEventToObject(objectEl *etree.Element, eventFull Event) {
-	linkEventIdEl := objectEl.CreateElement("premis:linkingEventIdentifier")
-
-	linkEventIdTypeEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierType")
-	linkEventIdTypeEl.CreateText(eventFull.Summary.IdType)
-
-	linkEventIdValueEl := linkEventIdEl.CreateElement("premis:linkingEventIdentifierValue")
-	linkEventIdValueEl.CreateText(eventFull.Summary.IdValue)
 }
 
 func addEventAgentIdentifierElement(eventEl *etree.Element, event Event) {
@@ -336,30 +362,4 @@ func checkIfAgentElementExists(PREMISEl *etree.Element, agent Agent) bool {
 	}
 
 	return checkForDuplicateElementData(PREMISEl, "agent", paths)
-}
-
-func FilesWithinDirectory(contentPath string) ([]string, error) {
-	var subpaths []string
-
-	err := filepath.WalkDir(contentPath, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() {
-			return nil
-		}
-
-		subpath, err := filepath.Rel(contentPath, p)
-		if err != nil {
-			return err
-		}
-
-		subpaths = append(subpaths, subpath)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return subpaths, nil
 }
