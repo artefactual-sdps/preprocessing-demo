@@ -1,7 +1,6 @@
 package premis_test
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/beevik/etree"
@@ -86,17 +85,6 @@ const premisAgentAddContent = `<?xml version="1.0" encoding="UTF-8"?>
   </premis:agent>
 </premis:premis>
 `
-
-func blankElementText(doc *etree.Document, xpath string) error {
-	el := doc.FindElement(xpath)
-	if el == nil {
-		return errors.New("element not found")
-	}
-
-	el.SetText("")
-
-	return nil
-}
 
 func TestParseFile(t *testing.T) {
 	t.Parallel()
