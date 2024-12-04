@@ -140,25 +140,13 @@ func AppendObjectXML(doc *etree.Document, object Object) error {
 }
 
 func AppendEventXMLForEachObject(doc *etree.Document, eventSummary EventSummary, agent Agent) error {
-	el, err := getRoot(doc)
+	PREMISEl, err := getRoot(doc)
 	if err != nil {
 		return err
 	}
 
 	// Add events for each existing object.
-	objectEls := el.FindElements("//premis:object")
-	appendEventXMLForObjects(el, eventSummary, agent, objectEls)
-
-	return nil
-}
-
-func appendEventXMLForObjects(
-	PREMISEl *etree.Element,
-	eventSummary EventSummary,
-	agent Agent,
-	objectEls []*etree.Element,
-) {
-	for _, objectEl := range objectEls {
+	for _, objectEl := range PREMISEl.FindElements("//premis:object") {
 		// Define PREMIS event.
 		event := eventFromEventSummaryAndAgent(eventSummary, agent)
 
@@ -168,6 +156,8 @@ func appendEventXMLForObjects(
 		// Link event to object
 		LinkEventToObject(objectEl, event)
 	}
+
+	return nil
 }
 
 func AppendAgentXML(doc *etree.Document, agent Agent) error {
