@@ -12,6 +12,19 @@ import (
 	"github.com/artefactual-sdps/preprocessing-demo/internal/premis"
 )
 
+const expectedPREMISWithAgent = `<?xml version="1.0" encoding="UTF-8"?>
+<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0">
+  <premis:agent>
+    <premis:agentIdentifier>
+      <premis:agentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:agentIdentifierType>
+      <premis:agentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:agentIdentifierValue>
+    </premis:agentIdentifier>
+    <premis:agentName>Enduro</premis:agentName>
+    <premis:agentType>software</premis:agentType>
+  </premis:agent>
+</premis:premis>
+`
+
 func TestAddPREMISAgent(t *testing.T) {
 	t.Parallel()
 
@@ -40,10 +53,11 @@ func TestAddPREMISAgent(t *testing.T) {
 	transferDeleted.Remove()
 
 	tests := []struct {
-		name    string
-		params  activities.AddPREMISAgentParams
-		result  activities.AddPREMISAgentResult
-		wantErr string
+		name       string
+		params     activities.AddPREMISAgentParams
+		result     activities.AddPREMISAgentResult
+		wantErr    string
+		wantPREMIS string
 	}{
 		{
 			name: "Add PREMIS agent for normal content",
@@ -51,7 +65,8 @@ func TestAddPREMISAgent(t *testing.T) {
 				PREMISFilePath: PREMISFilePathNormal,
 				Agent:          premis.AgentDefault(),
 			},
-			result: activities.AddPREMISAgentResult{},
+			result:     activities.AddPREMISAgentResult{},
+			wantPREMIS: expectedPREMISWithAgent,
 		},
 		{
 			name: "Add PREMIS agent for no content",
@@ -59,7 +74,8 @@ func TestAddPREMISAgent(t *testing.T) {
 				PREMISFilePath: PREMISFilePathNoFiles,
 				Agent:          premis.AgentDefault(),
 			},
-			result: activities.AddPREMISAgentResult{},
+			result:     activities.AddPREMISAgentResult{},
+			wantPREMIS: expectedPREMISWithAgent,
 		},
 		{
 			name: "Add PREMIS agent for bad path",
@@ -101,7 +117,14 @@ func TestAddPREMISAgent(t *testing.T) {
 			assert.NilError(t, err)
 			assert.DeepEqual(t, res, tt.result)
 
-			_, err = premis.ParseFile(tt.params.PREMISFilePath)
+			doc, err := premis.ParseFile(tt.params.PREMISFilePath)
+			if tt.wantPREMIS != "" {
+				xml, err := doc.WriteToString()
+				if err != nil {
+					t.Errorf("error writing xml too string")
+				}
+				assert.Equal(t, xml, tt.wantPREMIS)
+			}
 			assert.NilError(t, err)
 		})
 	}
