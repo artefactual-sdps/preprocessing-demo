@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 
 	"github.com/beevik/etree"
+	"go.artefactual.dev/tools/fsutil"
 )
 
 const EmptyXML = `<?xml version="1.0" encoding="UTF-8"?>
@@ -93,19 +93,17 @@ func ParseOrInitialize(filePath string) (*etree.Document, error) {
 	var doc *etree.Document
 	var err error
 
-	_, err = os.Stat(filePath)
+	exists, err := fsutil.Exists(filePath)
+	if err != nil {
+		return nil, err
+	}
 
-	if err == nil {
+	if exists {
 		doc, err = ParseFile(filePath)
-		if err != nil {
-			return nil, err
-		}
-	} else if errors.Is(err, os.ErrNotExist) {
-		doc, err = NewDoc()
-		if err != nil {
-			return nil, err
-		}
 	} else {
+		doc, err = NewDoc()
+	}
+	if err != nil {
 		return nil, err
 	}
 

@@ -10,7 +10,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
-	go.artefactual.dev/tools v0.14.0
+	go.artefactual.dev/tools v0.17.0
 	go.temporal.io/sdk v1.26.1
 	gotest.tools/v3 v3.5.1
 )
