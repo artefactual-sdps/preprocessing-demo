@@ -99,12 +99,12 @@ func TestAddPREMISEvent(t *testing.T) {
 
 	// Normal execution with no failures (for execution expected to work).
 	PREMISFilePathNormalNoFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(expectedPREMIS),
+		fs.WithContent(expectedPREMISWithFile),
 	).Path()
 
 	// Normal execution with failures (for execution expected to work).
 	PREMISFilePathNormalWithFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(expectedPREMIS),
+		fs.WithContent(expectedPREMISWithFile),
 	).Path()
 
 	// Creation of PREMIS file in existing directory (for execution expected to work).
