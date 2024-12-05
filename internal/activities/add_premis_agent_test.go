@@ -116,16 +116,19 @@ func TestAddPREMISAgent(t *testing.T) {
 			future.Get(&res)
 			assert.NilError(t, err)
 			assert.DeepEqual(t, res, tt.result)
+			assert.NilError(t, err)
 
-			doc, err := premis.ParseFile(tt.params.PREMISFilePath)
+			// Compare PREMIS output to what's expected.
 			if tt.wantPREMIS != "" {
+				doc, err := premis.ParseFile(tt.params.PREMISFilePath)
+
 				xml, err := doc.WriteToString()
 				if err != nil {
 					t.Errorf("error writing xml too string")
 				}
+
 				assert.Equal(t, xml, tt.wantPREMIS)
 			}
-			assert.NilError(t, err)
 		})
 	}
 }
