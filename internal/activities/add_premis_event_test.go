@@ -12,17 +12,99 @@ import (
 	"github.com/artefactual-sdps/preprocessing-demo/internal/premis"
 )
 
+const expectedPREMISWithSuccessfulEvent = `<?xml version="1.0" encoding="UTF-8"?>
+<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0">
+  <premis:object xsi:type="premis:file">
+    <premis:objectIdentifier>
+      <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+      <premis:objectIdentifierValue>52fdfc07-2182-454f-963f-5f0f9a621d72</premis:objectIdentifierValue>
+    </premis:objectIdentifier>
+    <premis:objectCharacteristics>
+      <premis:format>
+        <premis:formatDesignation>
+          <premis:formatName/>
+        </premis:formatDesignation>
+      </premis:format>
+    </premis:objectCharacteristics>
+    <premis:originalName>somefile.txt</premis:originalName>
+    <premis:linkingEventIdentifier>
+      <premis:linkingEventIdentifierType/>
+      <premis:linkingEventIdentifierValue/>
+    </premis:linkingEventIdentifier>
+  </premis:object>
+  <premis:event>
+    <premis:eventIdentifier>
+      <premis:eventIdentifierType/>
+      <premis:eventIdentifierValue/>
+    </premis:eventIdentifier>
+    <premis:eventType>someActivity</premis:eventType>
+    <premis:eventDateTime/>
+    <premis:eventDetailInformation>
+      <premis:eventDetail/>
+    </premis:eventDetailInformation>
+    <premis:eventOutcomeInformation>
+      <premis:eventOutcome>valid</premis:eventOutcome>
+    </premis:eventOutcomeInformation>
+    <premis:linkingAgentIdentifier>
+      <premis:linkingAgentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:linkingAgentIdentifierType>
+      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:linkingAgentIdentifierValue>
+    </premis:linkingAgentIdentifier>
+  </premis:event>
+</premis:premis>
+`
+
+const expectedPREMISWithUnsuccessfulEvent = `<?xml version="1.0" encoding="UTF-8"?>
+<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0">
+  <premis:object xsi:type="premis:file">
+    <premis:objectIdentifier>
+      <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+      <premis:objectIdentifierValue>52fdfc07-2182-454f-963f-5f0f9a621d72</premis:objectIdentifierValue>
+    </premis:objectIdentifier>
+    <premis:objectCharacteristics>
+      <premis:format>
+        <premis:formatDesignation>
+          <premis:formatName/>
+        </premis:formatDesignation>
+      </premis:format>
+    </premis:objectCharacteristics>
+    <premis:originalName>somefile.txt</premis:originalName>
+    <premis:linkingEventIdentifier>
+      <premis:linkingEventIdentifierType/>
+      <premis:linkingEventIdentifierValue/>
+    </premis:linkingEventIdentifier>
+  </premis:object>
+  <premis:event>
+    <premis:eventIdentifier>
+      <premis:eventIdentifierType/>
+      <premis:eventIdentifierValue/>
+    </premis:eventIdentifier>
+    <premis:eventType>someActivity</premis:eventType>
+    <premis:eventDateTime/>
+    <premis:eventDetailInformation>
+      <premis:eventDetail/>
+    </premis:eventDetailInformation>
+    <premis:eventOutcomeInformation>
+      <premis:eventOutcome>invalid</premis:eventOutcome>
+    </premis:eventOutcomeInformation>
+    <premis:linkingAgentIdentifier>
+      <premis:linkingAgentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:linkingAgentIdentifierType>
+      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:linkingAgentIdentifierValue>
+    </premis:linkingAgentIdentifier>
+  </premis:event>
+</premis:premis>
+`
+
 func TestAddPREMISEvent(t *testing.T) {
 	t.Parallel()
 
 	// Normal execution with no failures (for execution expected to work).
 	PREMISFilePathNormalNoFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(premis.EmptyXML),
+		fs.WithContent(expectedPREMIS),
 	).Path()
 
 	// Normal execution with failures (for execution expected to work).
 	PREMISFilePathNormalWithFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(premis.EmptyXML),
+		fs.WithContent(expectedPREMIS),
 	).Path()
 
 	// Creation of PREMIS file in existing directory (for execution expected to work).
@@ -49,10 +131,11 @@ func TestAddPREMISEvent(t *testing.T) {
 	failures = append(failures, "some failure")
 
 	tests := []struct {
-		name    string
-		params  activities.AddPREMISEventParams
-		result  activities.AddPREMISEventResult
-		wantErr string
+		name       string
+		params     activities.AddPREMISEventParams
+		result     activities.AddPREMISEventResult
+		wantErr    string
+		wantPREMIS string
 	}{
 		{
 			name: "Add PREMIS event for normal content with no failures",
@@ -64,7 +147,8 @@ func TestAddPREMISEvent(t *testing.T) {
 				},
 				Failures: noFailures,
 			},
-			result: activities.AddPREMISEventResult{},
+			result:     activities.AddPREMISEventResult{},
+			wantPREMIS: expectedPREMISWithSuccessfulEvent,
 		},
 		{
 			name: "Add PREMIS event for normal content with failures",
@@ -76,7 +160,8 @@ func TestAddPREMISEvent(t *testing.T) {
 				},
 				Failures: failures,
 			},
-			result: activities.AddPREMISEventResult{},
+			result:     activities.AddPREMISEventResult{},
+			wantPREMIS: expectedPREMISWithUnsuccessfulEvent,
 		},
 		{
 			name: "Add PREMIS event for no content",
@@ -88,7 +173,8 @@ func TestAddPREMISEvent(t *testing.T) {
 				},
 				Failures: noFailures,
 			},
-			result: activities.AddPREMISEventResult{},
+			result:     activities.AddPREMISEventResult{},
+			wantPREMIS: premis.EmptyXML,
 		},
 		{
 			name: "Add PREMIS event for bad path",
@@ -134,7 +220,17 @@ func TestAddPREMISEvent(t *testing.T) {
 			assert.NilError(t, err)
 			assert.DeepEqual(t, res, tt.result)
 
-			_, err = premis.ParseFile(tt.params.PREMISFilePath)
+			doc, err := premis.ParseFile(tt.params.PREMISFilePath)
+			if tt.wantPREMIS != "" {
+				xml, err := doc.WriteToString()
+				if err != nil {
+					t.Errorf("error writing xml too string")
+				}
+				//panic(tt.wantPREMIS)
+				//fmt.Println(xml)
+				//fmt.Println(tt.wantPREMIS)
+				assert.Equal(t, xml, tt.wantPREMIS)
+			}
 			assert.NilError(t, err)
 		})
 	}
