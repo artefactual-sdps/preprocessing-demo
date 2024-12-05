@@ -121,6 +121,9 @@ func TestAddPREMISAgent(t *testing.T) {
 			// Compare PREMIS output to what's expected.
 			if tt.wantPREMIS != "" {
 				doc, err := premis.ParseFile(tt.params.PREMISFilePath)
+				if err != nil {
+					t.Errorf("error parsing premis xml")
+				}
 
 				xml, err := doc.WriteToString()
 				if err != nil {
