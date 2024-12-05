@@ -2,6 +2,7 @@ package workercmd
 
 import (
 	"context"
+	"crypto/rand"
 
 	"github.com/artefactual-sdps/temporal-activities/bagcreate"
 	"github.com/artefactual-sdps/temporal-activities/ffvalidate"
@@ -13,6 +14,7 @@ import (
 	temporalsdk_worker "go.temporal.io/sdk/worker"
 	temporalsdk_workflow "go.temporal.io/sdk/workflow"
 
+	"github.com/artefactual-sdps/preprocessing-demo/internal/activities"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/config"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/workflow"
 )
@@ -66,6 +68,18 @@ func (m *Main) Run(ctx context.Context) error {
 	w.RegisterActivityWithOptions(
 		bagcreate.New(m.cfg.Bagit).Execute,
 		temporalsdk_activity.RegisterOptions{Name: bagcreate.Name},
+	)
+	w.RegisterActivityWithOptions(
+		activities.NewAddPREMISAgent().Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISAgentName},
+	)
+	w.RegisterActivityWithOptions(
+		activities.NewAddPREMISEvent().Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISEventName},
+	)
+	w.RegisterActivityWithOptions(
+		activities.NewAddPREMISObjects(rand.Reader).Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISObjectsName},
 	)
 
 	if err := w.Start(); err != nil {

@@ -1,6 +1,7 @@
 package workflow_test
 
 import (
+	"crypto/rand"
 	"fmt"
 	"path/filepath"
 	"testing"
@@ -12,14 +13,48 @@ import (
 	temporalsdk_activity "go.temporal.io/sdk/activity"
 	temporalsdk_testsuite "go.temporal.io/sdk/testsuite"
 	temporalsdk_worker "go.temporal.io/sdk/worker"
+	"gotest.tools/v3/fs"
 
+	"github.com/artefactual-sdps/preprocessing-demo/internal/activities"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/config"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/enums"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/eventlog"
 	"github.com/artefactual-sdps/preprocessing-demo/internal/workflow"
 )
 
-const sharedPath = "/shared/path/"
+const allowedFormatsCSV = `Format name,Pronom PUID
+text,x-fmt/16
+text,x-fmt/21
+text,x-fmt/22
+text,x-fmt/62
+text,x-fmt/111
+text,x-fmt/282
+text,x-fmt/283
+PDF/A,fmt/95
+PDF/A,fmt/354
+PDF/A,fmt/476
+PDF/A,fmt/477
+PDF/A,fmt/478
+CSV,x-fmt/18
+SIARD,fmt/161
+SIARD,fmt/1196
+SIARD,fmt/1777
+TIFF,fmt/353
+JPEG 2000,x-fmt/392
+WAVE,fmt/1
+WAVE,fmt/2
+WAVE,fmt/6
+WAVE,fmt/141
+FFV1,fmt/569
+MPEG-4,fmt/199
+XML/XSD,fmt/101
+XML/XSD,x-fmt/280
+INTERLIS,fmt/1014
+INTERLIS,fmt/1012
+INTERLIS,fmt/654
+INTERLIS,fmt/1013
+INTERLIS,fmt/1011
+INTERLIS,fmt/653`
 
 type PreprocessingTestSuite struct {
 	suite.Suite
@@ -27,11 +62,13 @@ type PreprocessingTestSuite struct {
 
 	env      *temporalsdk_testsuite.TestWorkflowEnvironment
 	workflow *workflow.PreprocessingWorkflow
+	testDir  string
 }
 
 func (s *PreprocessingTestSuite) SetupTest(cfg config.Configuration) {
 	s.env = s.NewTestWorkflowEnvironment()
 	s.env.SetWorkerOptions(temporalsdk_worker.Options{EnableSessionWorker: true})
+	s.testDir = s.T().TempDir()
 
 	// Register activities.
 	s.env.RegisterActivityWithOptions(
@@ -42,8 +79,20 @@ func (s *PreprocessingTestSuite) SetupTest(cfg config.Configuration) {
 		bagcreate.New(cfg.Bagit).Execute,
 		temporalsdk_activity.RegisterOptions{Name: bagcreate.Name},
 	)
+	s.env.RegisterActivityWithOptions(
+		activities.NewAddPREMISAgent().Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISAgentName},
+	)
+	s.env.RegisterActivityWithOptions(
+		activities.NewAddPREMISEvent().Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISEventName},
+	)
+	s.env.RegisterActivityWithOptions(
+		activities.NewAddPREMISObjects(rand.Reader).Execute,
+		temporalsdk_activity.RegisterOptions{Name: activities.AddPREMISObjectsName},
+	)
 
-	s.workflow = workflow.NewPreprocessingWorkflow(sharedPath)
+	s.workflow = workflow.NewPreprocessingWorkflow(s.testDir)
 }
 
 func (s *PreprocessingTestSuite) AfterTest(suiteName, testName string) {
@@ -55,10 +104,15 @@ func TestPreprocessingWorkflow(t *testing.T) {
 }
 
 func (s *PreprocessingTestSuite) TestSuccess() {
-	relPath := "transfer"
+	transferFiles := fs.NewDir(s.T(), "",
+		fs.WithFile("allowed_file_formats.csv", allowedFormatsCSV),
+	)
+
+	relPath := transferFiles.Path() // "transfer"
+
 	s.SetupTest(config.Configuration{
 		FileFormat: ffvalidate.Config{
-			AllowlistPath: "./testdata/allowed_file_formats.csv",
+			AllowlistPath: transferFiles.Path() + "/allowed_file_formats.csv",
 		},
 	})
 	sessionCtx := mock.AnythingOfType("*context.timerCtx")
@@ -67,7 +121,7 @@ func (s *PreprocessingTestSuite) TestSuccess() {
 	s.env.OnActivity(
 		ffvalidate.Name,
 		sessionCtx,
-		&ffvalidate.Params{Path: filepath.Join(sharedPath, relPath)},
+		&ffvalidate.Params{Path: filepath.Join(s.testDir, relPath)},
 	).Return(
 		&ffvalidate.Result{}, nil,
 	)
@@ -75,9 +129,9 @@ func (s *PreprocessingTestSuite) TestSuccess() {
 	s.env.OnActivity(
 		bagcreate.Name,
 		sessionCtx,
-		&bagcreate.Params{SourcePath: filepath.Join(sharedPath, relPath)},
+		&bagcreate.Params{SourcePath: filepath.Join(s.testDir, relPath)},
 	).Return(
-		&bagcreate.Result{BagPath: filepath.Join(sharedPath, relPath)},
+		&bagcreate.Result{BagPath: filepath.Join(s.testDir, relPath)},
 		nil,
 	)
 
@@ -106,6 +160,13 @@ func (s *PreprocessingTestSuite) TestSuccess() {
 				{
 					Name:        "Bag SIP",
 					Message:     "SIP has been bagged",
+					Outcome:     enums.EventOutcomeSuccess,
+					StartedAt:   s.env.Now().UTC(),
+					CompletedAt: s.env.Now().UTC(),
+				},
+				{
+					Name:        "Create premis.xml",
+					Message:     "Created a premis.xml and stored in metadata directory",
 					Outcome:     enums.EventOutcomeSuccess,
 					StartedAt:   s.env.Now().UTC(),
 					CompletedAt: s.env.Now().UTC(),
@@ -143,7 +204,7 @@ func (s *PreprocessingTestSuite) TestSystemError() {
 	s.env.OnActivity(
 		ffvalidate.Name,
 		sessionCtx,
-		&ffvalidate.Params{Path: filepath.Join(sharedPath, relPath)},
+		&ffvalidate.Params{Path: filepath.Join(s.testDir, relPath)},
 	).Return(
 		&ffvalidate.Result{}, nil,
 	)
@@ -151,12 +212,12 @@ func (s *PreprocessingTestSuite) TestSystemError() {
 	s.env.OnActivity(
 		bagcreate.Name,
 		sessionCtx,
-		&bagcreate.Params{SourcePath: filepath.Join(sharedPath, relPath)},
+		&bagcreate.Params{SourcePath: filepath.Join(s.testDir, relPath)},
 	).Return(
 		nil,
 		fmt.Errorf(
 			"bagcreate: failed to open %s: permission denied",
-			filepath.Join(sharedPath, relPath),
+			filepath.Join(s.testDir, relPath),
 		),
 	)
 
@@ -208,7 +269,7 @@ func (s *PreprocessingTestSuite) TestFFValidationError() {
 	s.env.OnActivity(
 		ffvalidate.Name,
 		sessionCtx,
-		&ffvalidate.Params{Path: filepath.Join(sharedPath, relPath)},
+		&ffvalidate.Params{Path: filepath.Join(s.testDir, relPath)},
 	).Return(
 		&ffvalidate.Result{
 			Failures: []string{
