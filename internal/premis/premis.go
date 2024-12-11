@@ -115,6 +115,7 @@ func AppendObjectXML(doc *etree.Document, object Object) error {
 	}
 
 	addObjectElementIfNeeded(el, object)
+	doc.Indent(2)
 
 	return nil
 }
@@ -136,6 +137,7 @@ func AppendEventXMLForEachObject(doc *etree.Document, eventSummary EventSummary,
 		// Link event to object
 		LinkEventToObject(objectEl, event)
 	}
+	doc.Indent(2)
 
 	return nil
 }
@@ -147,6 +149,7 @@ func AppendAgentXML(doc *etree.Document, agent Agent) error {
 	}
 
 	addAgentElementIfNeeded(el, agent)
+	doc.Indent(2)
 
 	return nil
 }
