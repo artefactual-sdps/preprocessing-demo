@@ -1,6 +1,7 @@
 package activities_test
 
 import (
+	"os"
 	"testing"
 
 	temporalsdk_activity "go.temporal.io/sdk/activity"
@@ -120,17 +121,9 @@ func TestAddPREMISAgent(t *testing.T) {
 
 			// Compare PREMIS output to what's expected.
 			if tt.wantPREMIS != "" {
-				doc, err := premis.ParseFile(tt.params.PREMISFilePath)
-				if err != nil {
-					t.Errorf("error parsing premis xml")
-				}
-
-				xml, err := doc.WriteToString()
-				if err != nil {
-					t.Errorf("error writing xml too string")
-				}
-
-				assert.Equal(t, xml, tt.wantPREMIS)
+				b, err := os.ReadFile(tt.params.PREMISFilePath)
+				assert.NilError(t, err)
+				assert.Equal(t, string(b), tt.wantPREMIS)
 			}
 		})
 	}
