@@ -154,8 +154,7 @@ func TestAppendPREMISObjectXML(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Get resulting XML string.
-	doc.Indent(2)
-	xml, err := doc.WriteToString()
+	xml, err := premis.WriteIndentedToString(doc)
 	assert.NilError(t, err)
 
 	// Compare XML to constant.
@@ -189,8 +188,7 @@ func TestAppendPREMISEventXML(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Get resulting XML string.
-	doc.Indent(2)
-	xml, err := doc.WriteToString()
+	xml, err := premis.WriteIndentedToString(doc)
 	assert.NilError(t, err)
 
 	// Compare XML to constant.
@@ -208,8 +206,7 @@ func TestAppendPREMISAgentXML(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Get resulting XML string.
-	doc.Indent(2)
-	xml, err := doc.WriteToString()
+	xml, err := premis.WriteIndentedToString(doc)
 	assert.NilError(t, err)
 
 	// Compare XML to constant.
@@ -220,8 +217,7 @@ func TestAppendPREMISAgentXML(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Get resulting XML string.
-	doc.Indent(2)
-	xml, err = doc.WriteToString()
+	xml, err = premis.WriteIndentedToString(doc)
 	assert.NilError(t, err)
 
 	// Compare XML to constant to make sure a duplicate agent wasn't added.

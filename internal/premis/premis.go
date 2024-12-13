@@ -10,9 +10,12 @@ import (
 	"go.artefactual.dev/tools/fsutil"
 )
 
-const EmptyXML = `<?xml version="1.0" encoding="UTF-8"?>
+const (
+	EmptyXML = `<?xml version="1.0" encoding="UTF-8"?>
 <premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0"></premis:premis>
 `
+	indentSpaces = 2
+)
 
 type ObjectEventIdentifier struct {
 	IdType  string
@@ -69,8 +72,6 @@ func NewDoc() (*etree.Document, error) {
 		return nil, err
 	}
 
-	doc.Indent(2)
-
 	return doc, nil
 }
 
@@ -81,8 +82,6 @@ func ParseFile(filePath string) (*etree.Document, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parse XML: %v", err)
 	}
-
-	doc.Indent(2)
 
 	return doc, nil
 }
@@ -108,6 +107,16 @@ func ParseOrInitialize(filePath string) (*etree.Document, error) {
 	return doc, nil
 }
 
+func WriteIndentedToFile(doc *etree.Document, filePath string) error {
+	doc.Indent(indentSpaces)
+	return doc.WriteToFile(filePath)
+}
+
+func WriteIndentedToString(doc *etree.Document) (string, error) {
+	doc.Indent(indentSpaces)
+	return doc.WriteToString()
+}
+
 func AppendObjectXML(doc *etree.Document, object Object) error {
 	el, err := getRoot(doc)
 	if err != nil {
@@ -115,7 +124,6 @@ func AppendObjectXML(doc *etree.Document, object Object) error {
 	}
 
 	addObjectElementIfNeeded(el, object)
-	doc.Indent(2)
 
 	return nil
 }
@@ -137,7 +145,6 @@ func AppendEventXMLForEachObject(doc *etree.Document, eventSummary EventSummary,
 		// Link event to object
 		LinkEventToObject(objectEl, event)
 	}
-	doc.Indent(2)
 
 	return nil
 }
@@ -149,7 +156,6 @@ func AppendAgentXML(doc *etree.Document, agent Agent) error {
 	}
 
 	addAgentElementIfNeeded(el, agent)
-	doc.Indent(2)
 
 	return nil
 }

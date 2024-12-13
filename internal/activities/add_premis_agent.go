@@ -37,7 +37,7 @@ func (md *AddPREMISAgentActivity) Execute(
 		return nil, err
 	}
 
-	err = doc.WriteToFile(params.PREMISFilePath)
+	err = premis.WriteIndentedToFile(doc, params.PREMISFilePath)
 	if err != nil {
 		return nil, err
 	}

@@ -70,7 +70,7 @@ func (a *AddPREMISObjectsActivity) Execute(
 		}
 	}
 
-	err = doc.WriteToFile(params.PREMISFilePath)
+	err = premis.WriteIndentedToFile(doc, params.PREMISFilePath)
 	if err != nil {
 		return nil, err
 	}
