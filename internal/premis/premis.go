@@ -11,7 +11,7 @@ import (
 )
 
 const EmptyXML = `<?xml version="1.0" encoding="UTF-8"?>
-<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0"/>
+<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0"></premis:premis>
 `
 
 type ObjectEventIdentifier struct {
@@ -62,7 +62,7 @@ func AgentDefault() Agent {
 }
 
 func NewDoc() (*etree.Document, error) {
-	doc := etree.NewDocument()
+	doc := newDoc()
 
 	err := doc.ReadFromString(EmptyXML)
 	if err != nil {
@@ -75,7 +75,7 @@ func NewDoc() (*etree.Document, error) {
 }
 
 func ParseFile(filePath string) (*etree.Document, error) {
-	doc := etree.NewDocument()
+	doc := newDoc()
 
 	err := doc.ReadFromFile(filePath)
 	if err != nil {
@@ -188,6 +188,13 @@ func FilesWithinDirectory(contentPath string) ([]string, error) {
 	}
 
 	return subpaths, nil
+}
+
+func newDoc() *etree.Document {
+	doc := etree.NewDocument()
+	doc.WriteSettings = etree.WriteSettings{CanonicalEndTags: true}
+
+	return doc
 }
 
 func getRoot(doc *etree.Document) (*etree.Element, error) {

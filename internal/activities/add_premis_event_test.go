@@ -1,6 +1,7 @@
 package activities_test
 
 import (
+	"os"
 	"testing"
 
 	temporalsdk_activity "go.temporal.io/sdk/activity"
@@ -22,25 +23,25 @@ const expectedPREMISWithSuccessfulEvent = `<?xml version="1.0" encoding="UTF-8"?
     <premis:objectCharacteristics>
       <premis:format>
         <premis:formatDesignation>
-          <premis:formatName/>
+          <premis:formatName></premis:formatName>
         </premis:formatDesignation>
       </premis:format>
     </premis:objectCharacteristics>
     <premis:originalName>somefile.txt</premis:originalName>
     <premis:linkingEventIdentifier>
-      <premis:linkingEventIdentifierType/>
-      <premis:linkingEventIdentifierValue/>
+      <premis:linkingEventIdentifierType></premis:linkingEventIdentifierType>
+      <premis:linkingEventIdentifierValue></premis:linkingEventIdentifierValue>
     </premis:linkingEventIdentifier>
   </premis:object>
   <premis:event>
     <premis:eventIdentifier>
-      <premis:eventIdentifierType/>
-      <premis:eventIdentifierValue/>
+      <premis:eventIdentifierType></premis:eventIdentifierType>
+      <premis:eventIdentifierValue></premis:eventIdentifierValue>
     </premis:eventIdentifier>
     <premis:eventType>someActivity</premis:eventType>
-    <premis:eventDateTime/>
+    <premis:eventDateTime></premis:eventDateTime>
     <premis:eventDetailInformation>
-      <premis:eventDetail/>
+      <premis:eventDetail></premis:eventDetail>
     </premis:eventDetailInformation>
     <premis:eventOutcomeInformation>
       <premis:eventOutcome>valid</premis:eventOutcome>
@@ -63,25 +64,25 @@ const expectedPREMISWithUnsuccessfulEvent = `<?xml version="1.0" encoding="UTF-8
     <premis:objectCharacteristics>
       <premis:format>
         <premis:formatDesignation>
-          <premis:formatName/>
+          <premis:formatName></premis:formatName>
         </premis:formatDesignation>
       </premis:format>
     </premis:objectCharacteristics>
     <premis:originalName>somefile.txt</premis:originalName>
     <premis:linkingEventIdentifier>
-      <premis:linkingEventIdentifierType/>
-      <premis:linkingEventIdentifierValue/>
+      <premis:linkingEventIdentifierType></premis:linkingEventIdentifierType>
+      <premis:linkingEventIdentifierValue></premis:linkingEventIdentifierValue>
     </premis:linkingEventIdentifier>
   </premis:object>
   <premis:event>
     <premis:eventIdentifier>
-      <premis:eventIdentifierType/>
-      <premis:eventIdentifierValue/>
+      <premis:eventIdentifierType></premis:eventIdentifierType>
+      <premis:eventIdentifierValue></premis:eventIdentifierValue>
     </premis:eventIdentifier>
     <premis:eventType>someActivity</premis:eventType>
-    <premis:eventDateTime/>
+    <premis:eventDateTime></premis:eventDateTime>
     <premis:eventDetailInformation>
-      <premis:eventDetail/>
+      <premis:eventDetail></premis:eventDetail>
     </premis:eventDetailInformation>
     <premis:eventOutcomeInformation>
       <premis:eventOutcome>invalid</premis:eventOutcome>
@@ -222,17 +223,9 @@ func TestAddPREMISEvent(t *testing.T) {
 
 			// Compare PREMIS output to what's expected.
 			if tt.wantPREMIS != "" {
-				doc, err := premis.ParseFile(tt.params.PREMISFilePath)
-				if err != nil {
-					t.Errorf("error parsing premis xml")
-				}
-
-				xml, err := doc.WriteToString()
-				if err != nil {
-					t.Errorf("error writing xml too string")
-				}
-
-				assert.Equal(t, xml, tt.wantPREMIS)
+				b, err := os.ReadFile(tt.params.PREMISFilePath)
+				assert.NilError(t, err)
+				assert.Equal(t, string(b), tt.wantPREMIS)
 			}
 		})
 	}

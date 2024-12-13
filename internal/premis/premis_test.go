@@ -20,7 +20,7 @@ const premisObjectAddContent = `<?xml version="1.0" encoding="UTF-8"?>
     <premis:objectCharacteristics>
       <premis:format>
         <premis:formatDesignation>
-          <premis:formatName/>
+          <premis:formatName></premis:formatName>
         </premis:formatDesignation>
       </premis:format>
     </premis:objectCharacteristics>
@@ -39,7 +39,7 @@ const premisObjectAndEventAddContent = `<?xml version="1.0" encoding="UTF-8"?>
     <premis:objectCharacteristics>
       <premis:format>
         <premis:formatDesignation>
-          <premis:formatName/>
+          <premis:formatName></premis:formatName>
         </premis:formatDesignation>
       </premis:format>
     </premis:objectCharacteristics>
@@ -135,7 +135,7 @@ func TestParseOrInitialize(t *testing.T) {
 			t,
 			got,
 			`<?xml version="1.0" encoding="UTF-8"?>
-<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0"/>
+<premis:premis xmlns:premis="http://www.loc.gov/premis/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/premis/v3 https://www.loc.gov/standards/premis/premis.xsd" version="3.0"></premis:premis>
 `)
 	})
 }

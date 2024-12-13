@@ -70,7 +70,6 @@ func (a *AddPREMISObjectsActivity) Execute(
 		}
 	}
 
-	doc.Indent(2)
 	err = doc.WriteToFile(params.PREMISFilePath)
 	if err != nil {
 		return nil, err
