@@ -3,7 +3,6 @@ package premis_test
 import (
 	"testing"
 
-	"github.com/beevik/etree"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/fs"
 
@@ -217,10 +216,6 @@ func TestAppendPREMISAgentXML(t *testing.T) {
 	assert.Equal(t, xml, premisAgentAddContent)
 
 	// Try to add another PREMIS agent to existing XML document.
-	doc = etree.NewDocument()
-	doc.ReadFromString(xml)
-	doc.Indent(2)
-
 	err = premis.AppendAgentXML(doc, premis.AgentDefault())
 	assert.NilError(t, err)
 
