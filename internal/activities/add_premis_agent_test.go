@@ -29,21 +29,6 @@ const expectedPREMISWithAgent = `<?xml version="1.0" encoding="UTF-8"?>
 func TestAddPREMISAgent(t *testing.T) {
 	t.Parallel()
 
-	// Transfer with one file (for execution expected to work).
-	transferOneFile := fs.NewDir(t, "",
-		fs.WithFile("something.txt", "1234567899"),
-		fs.WithDir("metadata"),
-	)
-
-	PREMISFilePathNormal := transferOneFile.Join("metadata", "premis.xml")
-
-	// Transfer with no files (for execution expected to work).
-	transferNoFiles := fs.NewDir(t, "",
-		fs.WithDir("metadata"),
-	)
-
-	PREMISFilePathNoFiles := transferNoFiles.Join("metadata", "premis.xml")
-
 	// Transfer that's been deleted (for execution expected to fail).
 	transferDeleted := fs.NewDir(t, "",
 		fs.WithDir("metadata"),
@@ -63,8 +48,11 @@ func TestAddPREMISAgent(t *testing.T) {
 		{
 			name: "Add PREMIS agent for normal content",
 			params: activities.AddPREMISAgentParams{
-				PREMISFilePath: PREMISFilePathNormal,
-				Agent:          premis.AgentDefault(),
+				PREMISFilePath: fs.NewDir(t, "",
+					fs.WithFile("something.txt", "1234567899"),
+					fs.WithDir("metadata"),
+				).Join("metadata", "premis.xml"),
+				Agent: premis.AgentDefault(),
 			},
 			result:     activities.AddPREMISAgentResult{},
 			wantPREMIS: expectedPREMISWithAgent,
@@ -72,8 +60,10 @@ func TestAddPREMISAgent(t *testing.T) {
 		{
 			name: "Add PREMIS agent for no content",
 			params: activities.AddPREMISAgentParams{
-				PREMISFilePath: PREMISFilePathNoFiles,
-				Agent:          premis.AgentDefault(),
+				PREMISFilePath: fs.NewDir(t, "",
+					fs.WithDir("metadata"),
+				).Join("metadata", "premis.xml"),
+				Agent: premis.AgentDefault(),
 			},
 			result:     activities.AddPREMISAgentResult{},
 			wantPREMIS: expectedPREMISWithAgent,

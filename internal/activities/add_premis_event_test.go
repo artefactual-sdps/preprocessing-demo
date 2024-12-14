@@ -98,23 +98,6 @@ const expectedPREMISWithUnsuccessfulEvent = `<?xml version="1.0" encoding="UTF-8
 func TestAddPREMISEvent(t *testing.T) {
 	t.Parallel()
 
-	// Normal execution with no failures (for execution expected to work).
-	PREMISFilePathNormalNoFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(expectedPREMISWithFile),
-	).Path()
-
-	// Normal execution with failures (for execution expected to work).
-	PREMISFilePathNormalWithFailures := fs.NewFile(t, "premis.xml",
-		fs.WithContent(expectedPREMISWithFile),
-	).Path()
-
-	// Creation of PREMIS file in existing directory (for execution expected to work).
-	transferNoFiles := fs.NewDir(t, "",
-		fs.WithDir("metadata"),
-	)
-
-	PREMISFilePathNoFiles := transferNoFiles.Join("metadata", "premis.xml")
-
 	// Creation of PREMIS file in non-existing directory (for execution expected to fail).
 	transferDeleted := fs.NewDir(t, "",
 		fs.WithDir("metadata"),
@@ -141,8 +124,10 @@ func TestAddPREMISEvent(t *testing.T) {
 		{
 			name: "Add PREMIS event for normal content with no failures",
 			params: activities.AddPREMISEventParams{
-				PREMISFilePath: PREMISFilePathNormalNoFailures,
-				Agent:          premis.AgentDefault(),
+				PREMISFilePath: fs.NewFile(t, "premis.xml",
+					fs.WithContent(expectedPREMISWithFile),
+				).Path(),
+				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
 					Type: "someActivity",
 				},
@@ -154,8 +139,10 @@ func TestAddPREMISEvent(t *testing.T) {
 		{
 			name: "Add PREMIS event for normal content with failures",
 			params: activities.AddPREMISEventParams{
-				PREMISFilePath: PREMISFilePathNormalWithFailures,
-				Agent:          premis.AgentDefault(),
+				PREMISFilePath: fs.NewFile(t, "premis.xml",
+					fs.WithContent(expectedPREMISWithFile),
+				).Path(),
+				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
 					Type: "someActivity",
 				},
@@ -167,8 +154,10 @@ func TestAddPREMISEvent(t *testing.T) {
 		{
 			name: "Add PREMIS event for no content",
 			params: activities.AddPREMISEventParams{
-				PREMISFilePath: PREMISFilePathNoFiles,
-				Agent:          premis.AgentDefault(),
+				PREMISFilePath: fs.NewDir(t, "",
+					fs.WithDir("metadata"),
+				).Join("metadata", "premis.xml"),
+				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
 					Type: "someActivity",
 				},

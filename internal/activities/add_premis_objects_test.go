@@ -43,11 +43,9 @@ func TestAddPREMISObjects(t *testing.T) {
 	transferOneFile := fs.NewDir(t, "",
 		fs.WithFile("somefile.txt", "somestuff"),
 	)
-	premisFilePathOneFile := transferOneFile.Join("metadata", "premis.xml")
 
 	// Test transfer with no files.
 	transferNoFiles := fs.NewDir(t, "")
-	premisFilePathNoFiles := transferNoFiles.Join("metadata", "premis.xml")
 
 	tests := []struct {
 		name       string
@@ -60,7 +58,7 @@ func TestAddPREMISObjects(t *testing.T) {
 			name: "Add PREMIS objects for transfer with one file",
 			params: activities.AddPREMISObjectsParams{
 				SIPPath:        transferOneFile.Path(),
-				PREMISFilePath: premisFilePathOneFile,
+				PREMISFilePath: transferOneFile.Join("metadata", "premis.xml"),
 			},
 			result:     activities.AddPREMISObjectsResult{},
 			wantPREMIS: expectedPREMISWithFile,
@@ -69,7 +67,7 @@ func TestAddPREMISObjects(t *testing.T) {
 			name: "Add PREMIS objects for empty transfer",
 			params: activities.AddPREMISObjectsParams{
 				SIPPath:        transferNoFiles.Path(),
-				PREMISFilePath: premisFilePathNoFiles,
+				PREMISFilePath: transferNoFiles.Join("metadata", "premis.xml"),
 			},
 			result:     activities.AddPREMISObjectsResult{},
 			wantPREMIS: expectedPREMISNoFiles,
