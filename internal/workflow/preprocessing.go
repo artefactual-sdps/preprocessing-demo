@@ -212,9 +212,9 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 			Summary: premis.EventSummary{
 				Type:          "validation",
 				Detail:        "name=\"Validate SIP file formats\"",
+				Outcome:       "valid",
 				OutcomeDetail: "File formats allowed",
 			},
-			Failures: nil,
 		},
 	).Get(ctx, &addPREMISEvent)
 	if e != nil {
@@ -231,9 +231,9 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 			Summary: premis.EventSummary{
 				Type:          "validation",
 				Detail:        "name=\"Bag SIP\"",
+				Outcome:       "valid",
 				OutcomeDetail: "Format allowed",
 			},
-			Failures: nil,
 		},
 	).Get(ctx, &addPREMISEvent)
 	if e != nil {

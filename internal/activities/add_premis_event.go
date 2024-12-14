@@ -13,7 +13,6 @@ type (
 		PREMISFilePath string
 		Agent          premis.Agent
 		Summary        premis.EventSummary
-		Failures       []string
 	}
 
 	AddPREMISEventResult struct{}
@@ -32,11 +31,6 @@ func (md *AddPREMISEventActivity) Execute(
 	doc, err := premis.ParseOrInitialize(params.PREMISFilePath)
 	if err != nil {
 		return nil, err
-	}
-
-	params.Summary.Outcome = "valid"
-	if params.Failures != nil {
-		params.Summary.Outcome = "invalid"
 	}
 
 	err = premis.AppendEventXMLForEachObject(doc, params.Summary, params.Agent)

@@ -107,13 +107,6 @@ func TestAddPREMISEvent(t *testing.T) {
 
 	transferDeleted.Remove()
 
-	// No failures.
-	var noFailures []string
-
-	// Failure.
-	var failures []string
-	failures = append(failures, "some failure")
-
 	tests := []struct {
 		name       string
 		params     activities.AddPREMISEventParams
@@ -129,9 +122,9 @@ func TestAddPREMISEvent(t *testing.T) {
 				).Path(),
 				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
-					Type: "someActivity",
+					Type:    "someActivity",
+					Outcome: "valid",
 				},
-				Failures: noFailures,
 			},
 			result:     activities.AddPREMISEventResult{},
 			wantPREMIS: expectedPREMISWithSuccessfulEvent,
@@ -144,9 +137,9 @@ func TestAddPREMISEvent(t *testing.T) {
 				).Path(),
 				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
-					Type: "someActivity",
+					Type:    "someActivity",
+					Outcome: "invalid",
 				},
-				Failures: failures,
 			},
 			result:     activities.AddPREMISEventResult{},
 			wantPREMIS: expectedPREMISWithUnsuccessfulEvent,
@@ -159,9 +152,9 @@ func TestAddPREMISEvent(t *testing.T) {
 				).Join("metadata", "premis.xml"),
 				Agent: premis.AgentDefault(),
 				Summary: premis.EventSummary{
-					Type: "someActivity",
+					Type:    "someActivity",
+					Outcome: "valid",
 				},
-				Failures: noFailures,
 			},
 			result:     activities.AddPREMISEventResult{},
 			wantPREMIS: premis.EmptyXML,
@@ -172,9 +165,9 @@ func TestAddPREMISEvent(t *testing.T) {
 				PREMISFilePath: PREMISFilePathNonExistent,
 				Agent:          premis.AgentDefault(),
 				Summary: premis.EventSummary{
-					Type: "someActivity",
+					Type:    "someActivity",
+					Outcome: "valid",
 				},
-				Failures: noFailures,
 			},
 			result:  activities.AddPREMISEventResult{},
 			wantErr: "no such file or directory",
