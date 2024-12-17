@@ -35,15 +35,15 @@ func (a *AddPREMISObjectsActivity) Execute(
 	ctx context.Context,
 	params *AddPREMISObjectsParams,
 ) (*AddPREMISObjectsResult, error) {
-	// Get subpaths of files in transfer.
-	subpaths, err := premis.FilesWithinDirectory(params.SIPPath)
-	if err != nil {
-		return nil, err
-	}
-
 	// Create parent directory, if necessary.
 	mdPath := filepath.Dir(params.PREMISFilePath)
 	if err := os.MkdirAll(mdPath, 0o700); err != nil {
+		return nil, err
+	}
+
+	// Get subpaths of files in transfer.
+	subpaths, err := premis.FilesWithinDirectory(params.SIPPath)
+	if err != nil {
 		return nil, err
 	}
 

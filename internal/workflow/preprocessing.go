@@ -2,7 +2,6 @@ package workflow
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -178,14 +177,6 @@ func writePREMISFile(ctx temporalsdk_workflow.Context, sipPath string) error {
 	var e error
 	metadataPath := filepath.Join(sipPath, "metadata")
 	premisFilePath := filepath.Join(metadataPath, "premis.xml")
-
-	// Add metadata directory if it doesn't exist.
-	if _, err := os.Stat(metadataPath); err != nil {
-		err = os.MkdirAll(metadataPath, 0o750)
-		if err != nil {
-			return err
-		}
-	}
 
 	// Add PREMIS objects.
 	var addPREMISObjects activities.AddPREMISObjectsResult
