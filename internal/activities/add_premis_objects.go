@@ -35,7 +35,7 @@ func (a *AddPREMISObjectsActivity) Execute(
 	ctx context.Context,
 	params *AddPREMISObjectsParams,
 ) (*AddPREMISObjectsResult, error) {
-	// Create parent directory, if necessary.
+	// Create PREMIS file parent directory or directories, if necessary.
 	mdPath := filepath.Dir(params.PREMISFilePath)
 	if err := os.MkdirAll(mdPath, 0o700); err != nil {
 		return nil, err
