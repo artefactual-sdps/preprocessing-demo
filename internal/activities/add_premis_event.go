@@ -24,7 +24,7 @@ func NewAddPREMISEvent() *AddPREMISEventActivity {
 	return &AddPREMISEventActivity{}
 }
 
-func (md *AddPREMISEventActivity) Execute(
+func (a *AddPREMISEventActivity) Execute(
 	ctx context.Context,
 	params *AddPREMISEventParams,
 ) (*AddPREMISEventResult, error) {

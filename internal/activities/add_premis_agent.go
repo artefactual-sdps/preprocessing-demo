@@ -23,7 +23,7 @@ func NewAddPREMISAgent() *AddPREMISAgentActivity {
 	return &AddPREMISAgentActivity{}
 }
 
-func (md *AddPREMISAgentActivity) Execute(
+func (a *AddPREMISAgentActivity) Execute(
 	ctx context.Context,
 	params *AddPREMISAgentParams,
 ) (*AddPREMISAgentResult, error) {
