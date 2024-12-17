@@ -200,7 +200,6 @@ func TestAddPREMISEvent(t *testing.T) {
 			assert.NilError(t, err)
 
 			future.Get(&res)
-			assert.NilError(t, err)
 			assert.DeepEqual(t, res, tt.result)
 
 			// Compare PREMIS output to what's expected.
