@@ -30,12 +30,8 @@ func TestAddPREMISAgent(t *testing.T) {
 	t.Parallel()
 
 	// Transfer that's been deleted (for execution expected to fail).
-	transferDeleted := fs.NewDir(t, "",
-		fs.WithDir("metadata"),
-	)
-
+	transferDeleted := fs.NewDir(t, "")
 	PREMISFilePathNonExistent := transferDeleted.Join("metadata", "premis.xml")
-
 	transferDeleted.Remove()
 
 	tests := []struct {
