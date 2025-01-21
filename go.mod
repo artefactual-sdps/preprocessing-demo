@@ -3,7 +3,7 @@ module github.com/artefactual-sdps/preprocessing-demo
 go 1.23.2
 
 require (
-	github.com/artefactual-sdps/temporal-activities v0.0.0-20241105002718-bc4a9d85ce42
+	github.com/artefactual-sdps/temporal-activities v0.0.0-20250116225551-b0b1966e3e19
 	github.com/beevik/etree v1.4.1
 	github.com/go-logr/logr v1.4.2
 	github.com/google/uuid v1.6.0

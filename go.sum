@@ -1,7 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/artefactual-sdps/temporal-activities v0.0.0-20241105002718-bc4a9d85ce42 h1:0Ymucvkou8aiZkQrVgZsTODGeGoQHVNV414IFOFRxX0=
-github.com/artefactual-sdps/temporal-activities v0.0.0-20241105002718-bc4a9d85ce42/go.mod h1:hV4rUdJ8FYqlEkvT0OqWuHj8DNc1v9j5/Dv8VsrYXLU=
+github.com/artefactual-sdps/temporal-activities v0.0.0-20250116225551-b0b1966e3e19 h1:HyNhEn7eTnbG9BhGcPgbVwHA7JvVEggcxQ/W4ehNyfw=
+github.com/artefactual-sdps/temporal-activities v0.0.0-20250116225551-b0b1966e3e19/go.mod h1:azRTgEUYLwKy9cLboLf4QySx1/ihVWoT/XT15zfUau8=
 github.com/beevik/etree v1.4.1 h1:PmQJDDYahBGNKDcpdX8uPy1xRCwoCGVUiW669MEirVI=
 github.com/beevik/etree v1.4.1/go.mod h1:gPNJNaBGVZ9AwsidazFZyygnd+0pAU38N4D+WemwKNs=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
