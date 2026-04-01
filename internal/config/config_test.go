@@ -66,8 +66,7 @@ func TestConfig(t *testing.T) {
 			name:       "Errors when configuration values are not valid",
 			configFile: "preprocessing.toml",
 			wantFound:  true,
-			wantErr: `invalid configuration:
-SharedPath: missing required value
+			wantErr: `invalid configuration: SharedPath: missing required value
 Temporal.TaskQueue: missing required value
 Temporal.WorkflowName: missing required value`,
 		},
@@ -83,8 +82,7 @@ workflowName = "preprocessing"
 maxConcurrentSessions = -1
 `,
 			wantFound: true,
-			wantErr: `invalid configuration:
-Worker.MaxConcurrentSessions: -1 is less than the minimum value (1)`,
+			wantErr:   `invalid configuration: Worker.MaxConcurrentSessions: -1 is less than the minimum value (1)`,
 		},
 		{
 			name:       "Errors when bagit checksumAlgorithm is invalid",
@@ -98,8 +96,7 @@ workflowName = "preprocessing"
 checksumAlgorithm = "unknown"
 `,
 			wantFound: true,
-			wantErr: `invalid configuration:
-Bagit.ChecksumAlgorithm: invalid value "unknown", must be one of (md5, sha1, sha256, sha512)`,
+			wantErr:   `invalid configuration: Bagit.ChecksumAlgorithm: invalid value "unknown", must be one of (md5, sha1, sha256, sha512)`,
 		},
 		{
 			name:       "Errors when TOML is invalid",
@@ -120,7 +117,6 @@ Bagit.ChecksumAlgorithm: invalid value "unknown", must be one of (md5, sha1, sha
 			wantErrContains: "configuration file not found: ",
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 

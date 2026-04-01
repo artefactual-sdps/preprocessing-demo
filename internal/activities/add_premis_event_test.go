@@ -48,7 +48,7 @@ const expectedPREMISWithSuccessfulEvent = `<?xml version="1.0" encoding="UTF-8"?
     </premis:eventOutcomeInformation>
     <premis:linkingAgentIdentifier>
       <premis:linkingAgentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:linkingAgentIdentifierType>
-      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:linkingAgentIdentifierValue>
+      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-demo</premis:linkingAgentIdentifierValue>
     </premis:linkingAgentIdentifier>
   </premis:event>
 </premis:premis>
@@ -89,7 +89,7 @@ const expectedPREMISWithUnsuccessfulEvent = `<?xml version="1.0" encoding="UTF-8
     </premis:eventOutcomeInformation>
     <premis:linkingAgentIdentifier>
       <premis:linkingAgentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:linkingAgentIdentifierType>
-      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:linkingAgentIdentifierValue>
+      <premis:linkingAgentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-demo</premis:linkingAgentIdentifierValue>
     </premis:linkingAgentIdentifier>
   </premis:event>
 </premis:premis>

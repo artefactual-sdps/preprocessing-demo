@@ -18,7 +18,7 @@ const expectedPREMISWithAgent = `<?xml version="1.0" encoding="UTF-8"?>
   <premis:agent>
     <premis:agentIdentifier>
       <premis:agentIdentifierType valueURI="http://id.loc.gov/vocabulary/identifiers/local">url</premis:agentIdentifierType>
-      <premis:agentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-sfa</premis:agentIdentifierValue>
+      <premis:agentIdentifierValue>https://github.com/artefactual-sdps/preprocessing-demo</premis:agentIdentifierValue>
     </premis:agentIdentifier>
     <premis:agentName>Enduro</premis:agentName>
     <premis:agentType>software</premis:agentType>

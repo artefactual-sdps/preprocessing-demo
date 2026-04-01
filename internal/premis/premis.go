@@ -60,7 +60,7 @@ func AgentDefault() Agent {
 		Type:    "software",
 		Name:    "Enduro",
 		IdType:  "url",
-		IdValue: "https://github.com/artefactual-sdps/preprocessing-sfa",
+		IdValue: "https://github.com/artefactual-sdps/preprocessing-demo",
 	}
 }
 
