@@ -1,5 +1,9 @@
 # preprocessing-demo
 
+> [!WARNING]  
+> This project is now archived and is no longer receiving security updates.
+> Use at your own risk!
+
 Enduro preprocessing demonstration workflow repository. This project is a basic
 demonstration of a preprocessing child workflow to be executed as part of the
 processing workflow in Enduro.
@@ -8,6 +12,7 @@ processing workflow in Enduro.
 - [Configuration](#configuration)
 - [Local environment](#local-environment)
 - [Makefile](#makefile)
+
 
 ## Repository requirements
 
